@@ -10,15 +10,15 @@ pool, with locked liquidity, and anyone can trade it.
 
 [Squadz](https://squadz.fun) is the website built on the protocol.
 
-> **Status:** deployed on Solana mainnet (program addresses below, filled in at deployment). Tested on devnet end to
-> end. **Not independently audited. Use at your own risk.**
+> **Status:** deployed on Solana mainnet (program addresses below). Tested on devnet end to end. **Not independently
+> audited. Use at your own risk.**
 
 ## Programs
 
 | Program | What it does | Mainnet address |
 |---|---|---|
-| `squadz-launch` | Lobbies, buys, refunds, launch, HODL drops, project treasury, fees, burns | set at deployment |
-| `squadz-hook` | Transfer hook: a coin only moves while `squadz-launch` runs one of its own instructions | set at deployment |
+| `squadz-launch` | Lobbies, buys, refunds, launch, HODL drops, project treasury, fees, burns | [`7g2QV5bdgV9LLdhFVJVzPN1bHW8RXk92WgKecQrNAjmw`](https://solscan.io/account/7g2QV5bdgV9LLdhFVJVzPN1bHW8RXk92WgKecQrNAjmw) |
+| `squadz-hook` | Transfer hook: a coin only moves while `squadz-launch` runs one of its own instructions | [`J78vo6a5GaE58zxwhy8tw3S8GvMSx5WeuUzBfD4NnN4j`](https://solscan.io/account/J78vo6a5GaE58zxwhy8tw3S8GvMSx5WeuUzBfD4NnN4j) |
 
 ## How a launch works
 
