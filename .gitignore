@@ -1,0 +1,10 @@
+target/
+.anchor/
+node_modules/
+keys/
+*keypair*.json
+deployer.json
+id.json
+.env*
+.dev.vars
+*.log

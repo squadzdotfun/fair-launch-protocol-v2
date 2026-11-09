@@ -1,0 +1,33 @@
+[package]
+name = "squadz-launch"
+version = "0.1.0"
+description = "Squadz Meteora program: members-only launches on a public Meteora curve"
+edition = "2021"
+publish = false
+rust-version = "1.84"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "squadz_launch"
+
+[features]
+# No on-chain IDL instructions, so nobody can claim the official IDL address. Publish the IDL off-chain.
+default = ["no-idl"]
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+# Every build must pick one. Mainnet refuses to compile until the test values are replaced.
+devnet = []
+mainnet = []
+# DEVNET TESTS ONLY: shrinks days to seconds so time rules can be tested.
+short-time = []
+
+[dependencies]
+anchor-lang = { version = "=0.31.1", features = ["init-if-needed"] }
+anchor-spl = { version = "=0.31.1", default-features = false, features = ["token", "token_2022", "associated_token"] }
+solana-security-txt = "=1.1.1"
+
+[lints.rust]
+unexpected_cfgs = { level = "allow" }

@@ -1,0 +1,33 @@
+[package]
+name = "squadz-hook"
+version = "0.1.0"
+description = "Transfer hook for the Squadz Meteora program: coins only move while our contract is running"
+edition = "2021"
+publish = false
+rust-version = "1.84"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "squadz_hook"
+
+[features]
+# No on-chain IDL instructions, so nobody can claim the official IDL address. Publish the IDL off-chain.
+default = ["no-idl"]
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+# Every build must pick one. Mainnet refuses to compile until its ids are set.
+devnet = []
+mainnet = []
+
+[dependencies]
+anchor-lang = { version = "=0.31.1", features = ["interface-instructions"] }
+anchor-spl = { version = "=0.31.1", default-features = false, features = ["token", "token_2022"] }
+spl-tlv-account-resolution = "=0.9.0"
+spl-transfer-hook-interface = "=0.9.0"
+solana-security-txt = "=1.1.1"
+
+[lints.rust]
+unexpected_cfgs = { level = "allow" }

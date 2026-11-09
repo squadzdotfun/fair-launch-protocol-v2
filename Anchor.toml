@@ -1,0 +1,14 @@
+[toolchain]
+anchor_version = "0.31.1"
+
+[features]
+resolution = true
+skip-lint = false
+
+# Mainnet addresses are set at deployment (see README).
+[programs.mainnet]
+
+[provider]
+cluster = "mainnet"
+# your own key file; never commit one
+wallet = "deployer.json"
