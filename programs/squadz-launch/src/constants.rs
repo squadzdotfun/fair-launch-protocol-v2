@@ -31,16 +31,24 @@ mod network {
         (5 * SOL, pubkey!("EEPKTabA9ikEuMnfiyCGRs2D1xXqSR8Fxt6kpbqzu4ij")),
     ];
 }
+/// Mainnet values (founders, 9 Nov, launch night).
 #[cfg(feature = "mainnet")]
 mod network {
     use super::*;
-    compile_error!("Mainnet values aren't set yet: the program ids in lib.rs and the hook, and every value in this block.");
-    pub const HOOK_PROGRAM: Pubkey = Pubkey::new_from_array([0; 32]);
-    pub const OPS_WALLET: Pubkey = Pubkey::new_from_array([0; 32]);
-    pub const SQUADZ_CREATOR: Pubkey = Pubkey::new_from_array([0; 32]);
-    pub const SQUADZ_MINT: Pubkey = Pubkey::new_from_array([0; 32]);
-    /// Only 75, 100, 125 and 150 SOL. No test targets.
-    pub const TARGETS: &[(u64, Pubkey)] = &[];
+    pub const HOOK_PROGRAM: Pubkey = pubkey!("J78vo6a5GaE58zxwhy8tw3S8GvMSx5WeuUzBfD4NnN4j");
+    /// Where creation and approval fees can be withdrawn to: the mainnet bot wallet, so the bots fund themselves.
+    pub const OPS_WALLET: Pubkey = pubkey!("4SRVBrC6umt9TaA4cN3n6TtPQY5s96sHcf1M8Xcp8jSK");
+    /// The team's launch pays no treasury fee: vault 0 of the team multisig (Squads v4 3AY6F8wNDrQP4FBmKHffrXu63hFkCFsYnDaSUv1TpDGz).
+    pub const SQUADZ_CREATOR: Pubkey = pubkey!("4pki8NpwGpGZf3SUF7XZ12u2xiZfhdfX4vd8KQNbMHRC");
+    /// $SQUADZ's coin, which the burn jar buys and burns: creator vault 0, coin number 11223978, bump 255 (scripts/mainnet/find-squadz-coin.js).
+    pub const SQUADZ_MINT: Pubkey = pubkey!("BnYu2TaX7dSitcsgN1KCnmwQY542EpodHBKgeLRNFAiR");
+    /// Only 75, 100, 125 and 150 SOL. No test targets. Settings made by tests/make-config-mainnet.js.
+    pub const TARGETS: &[(u64, Pubkey)] = &[
+        (75 * SOL, pubkey!("64YtqLayh5bpwvs6qNUd76DN42ppBjYZMqPDmnxnxuyE")),
+        (100 * SOL, pubkey!("EGB1zx1z2pxwap2vDreVP8zr1rNrYRyvsoZZLC3jynr8")),
+        (125 * SOL, pubkey!("HwxBqEnf1EaoejQX25KSRztMQdmMwUNPQ3Dw7EzuM4oe")),
+        (150 * SOL, pubkey!("J2sTuy2Ec6xyPamCXTMzkAYwq6H45daTJomX9XNv4EjJ")),
+    ];
 }
 pub use network::*;
 

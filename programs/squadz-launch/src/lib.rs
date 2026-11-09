@@ -29,9 +29,9 @@ use instructions::*;
 
 #[cfg(feature = "devnet")]
 declare_id!("GrW9TnN2gbbPoMmJtUniRGef9yDAfpqFeH95DLqP1bRA");
-// Mainnet's program id goes here. The mainnet build refuses to compile until it's set, see constants.rs.
+// Mainnet (founders, 9 Nov): keys\smp-mainnet-launch-program.json
 #[cfg(feature = "mainnet")]
-declare_id!("11111111111111111111111111111111");
+declare_id!("7g2QV5bdgV9LLdhFVJVzPN1bHW8RXk92WgKecQrNAjmw");
 
 #[program]
 pub mod squadz_launch {

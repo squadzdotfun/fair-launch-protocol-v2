@@ -32,12 +32,11 @@ declare_id!("MF1FtHVMcxjxVRLCno7pzbgPpfGZZ7fRuNqMp838Lrb");
 #[cfg(feature = "devnet")]
 pub const LAUNCH_PROGRAM: Pubkey = pubkey!("GrW9TnN2gbbPoMmJtUniRGef9yDAfpqFeH95DLqP1bRA");
 
+// Mainnet (founders, 9 Nov): keys\smp-mainnet-hook-program.json and keys\smp-mainnet-launch-program.json
 #[cfg(feature = "mainnet")]
-compile_error!("Mainnet values aren't set yet: this program's id and LAUNCH_PROGRAM.");
+declare_id!("J78vo6a5GaE58zxwhy8tw3S8GvMSx5WeuUzBfD4NnN4j");
 #[cfg(feature = "mainnet")]
-declare_id!("11111111111111111111111111111111");
-#[cfg(feature = "mainnet")]
-pub const LAUNCH_PROGRAM: Pubkey = Pubkey::new_from_array([0; 32]);
+pub const LAUNCH_PROGRAM: Pubkey = pubkey!("7g2QV5bdgV9LLdhFVJVzPN1bHW8RXk92WgKecQrNAjmw");
 /// The gate's flag: 8 bytes of Anchor discriminator, then 1 = open.
 pub const GATE_FLAG_OFFSET: usize = 8;
 

@@ -5,8 +5,9 @@ anchor_version = "0.31.1"
 resolution = true
 skip-lint = false
 
-# Mainnet addresses are set at deployment (see README).
 [programs.mainnet]
+squadz_hook = "J78vo6a5GaE58zxwhy8tw3S8GvMSx5WeuUzBfD4NnN4j"
+squadz_launch = "7g2QV5bdgV9LLdhFVJVzPN1bHW8RXk92WgKecQrNAjmw"
 
 [provider]
 cluster = "mainnet"
