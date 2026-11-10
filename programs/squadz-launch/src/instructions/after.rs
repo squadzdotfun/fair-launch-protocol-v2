@@ -799,8 +799,8 @@ fn burn_size(pool: &meteora::DammPool, available: u64) -> Result<u64> {
     Ok(available.min(mul_div(meteora::locked_sol(pool), BURN_MAX_POOL_BPS, BPS)?))
 }
 
-/// Spends part of the SOL set aside for this coin's own buy and burn, at most hourly. Anyone can call it. The size comes
-/// from the pool, not the caller, so a caller can't use up the hour on a tiny burn.
+/// Spends part of the SOL set aside for this coin's own buy and burn, at most every 15 minutes (BURN_INTERVAL). Anyone can call
+/// it. The size comes from the pool, not the caller, so a caller can't use up the interval on a tiny burn.
 pub fn coin_buy_and_burn<'info>(ctx: Context<'_, '_, 'info, 'info, CoinBurn<'info>>) -> Result<()> {
     let lobby_key = ctx.accounts.lobby.key();
     let mint_key = ctx.accounts.lobby.mint;
@@ -953,7 +953,7 @@ pub struct Burned {
     pub coins: u64,
 }
 
-/// 0: the pool doesn't exist yet or is paused. 1: too little to burn. Either way the money waits, and the hour isn't used.
+/// 0: the pool doesn't exist yet or is paused. 1: too little to burn. Either way the money waits, and the interval isn't used.
 #[event]
 pub struct BurnSkipped {
     pub mint: Pubkey,

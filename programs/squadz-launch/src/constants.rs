@@ -98,8 +98,18 @@ pub const METEORA_DAMM_V2: Pubkey = pubkey!("cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd
 pub const SUPPLY: u64 = 1_000_000_000_000_000;
 
 pub const OPS_SEED: &[u8] = b"ops";
-pub const CREATION_FEE: u64 = SOL / 10;
-pub const APPROVAL_FEE: u64 = SOL / 10;
+/// What creating a lobby costs its creator in all (founders, 10 Nov): the rent of every account creating makes, plus
+/// the upkeep fee. The contract works out the rent and takes only the rest as the fee, so the total is always this
+/// amount, whatever the coin's name, ticker and link sizes are. Not included: Solana's network fee, the treasury fee,
+/// and the creator's own buy.
+pub const CREATION_TOTAL: u64 = SOL / 20;
+/// On top of the total, for an approval-only lobby: the two together are a flat 0.1 SOL.
+pub const APPROVAL_FEE: u64 = SOL / 20;
+/// Sizes of the lobby's two token accounts, which the creator opens right after `create_lobby`, in the same
+/// transaction: its coin account (Token-2022: 165 + account type + hook marker + fixed-owner marker) and its
+/// wrapped-SOL account. Their rent counts towards the total.
+pub const COIN_VAULT_LEN: usize = 175;
+pub const WSOL_VAULT_LEN: usize = 165;
 pub const TREASURY_FEE_PER_BPS: u64 = SOL / 100;
 /// Kept from the launch fee for the upkeep account, covering the move to the pool (measured 0.0165 SOL). Meteora
 /// doesn't record who moved a coin, so this can't pay the mover directly without letting strangers take it.
@@ -116,7 +126,7 @@ pub const TREASURY_RELEASE_BPS: [u64; 4] = [1_000, 3_000, 3_000, 3_000];
 pub const BURN_STATE_SEED: &[u8] = b"burn_state";
 /// A burn spends at most this share of the SOL behind the pool's permanently locked liquidity.
 pub const BURN_MAX_POOL_BPS: u64 = 50;
-/// Smaller burns are skipped, without using up the hour.
+/// Smaller burns are skipped, without using up the interval.
 pub const BURN_MIN_AMOUNT: u64 = SOL / 1000;
 /// Normal price limit: 1.25% fee plus price impact.
 pub const BURN_MAX_SLIPPAGE_BPS: u64 = 200;
@@ -124,12 +134,13 @@ pub const BURN_MAX_SLIPPAGE_BPS: u64 = 200;
 pub const BURN_STUCK_SLIPPAGE_BPS: u64 = 1_100;
 /// Paid from the jar to whoever runs a jar burn.
 pub const BURN_TIP: u64 = 50_000;
+/// A coin's own buy and burn runs every 15 minutes (founders, 10 Nov; hourly before), the same as the jar below.
 #[cfg(not(feature = "short-time"))]
-pub const BURN_INTERVAL: i64 = 3_600;
+pub const BURN_INTERVAL: i64 = 900;
 #[cfg(feature = "short-time")]
 pub const BURN_INTERVAL: i64 = 30;
 /// The $SQUADZ burn jar burns every 15 minutes (founders, 8 Nov: so a busy jar keeps up). Each burn keeps the same
-/// 0.5% size limit, so each one stays as hard to game; there are just four times as many. Coin burns stay hourly.
+/// 0.5% size limit, so each one stays as hard to game; there are just four times as many.
 #[cfg(not(feature = "short-time"))]
 pub const JAR_BURN_INTERVAL: i64 = 900;
 #[cfg(feature = "short-time")]
@@ -202,7 +213,7 @@ const _: () = assert!(sum(&TREASURY_RELEASE_BPS) == BPS, "treasury releases must
 const _: () = assert!(BURN_STUCK_AFTER > BURN_INTERVAL, "the stuck timer must be longer than the burn interval");
 const _: () = assert!(BURN_STUCK_AFTER > JAR_BURN_INTERVAL, "the stuck timer must be longer than the jar's burn interval");
 #[cfg(not(feature = "short-time"))]
-const _: () = assert!(JAR_BURN_INTERVAL == 900 && BURN_INTERVAL == 3_600, "real builds: jar burns every 15 minutes, coin burns hourly");
+const _: () = assert!(JAR_BURN_INTERVAL == 900 && BURN_INTERVAL == 900, "real builds: the jar and coins burn every 15 minutes");
 const _: () = assert!(targets_fill_exactly(), "every target must be a multiple of 0.5 SOL");
 #[cfg(not(feature = "short-time"))]
 const _: () = assert!(DROP_TIMES[0] == 86_400 && OPENING_WINDOW == 1_800, "a real-time build must use real timers");

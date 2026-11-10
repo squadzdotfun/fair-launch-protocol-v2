@@ -138,6 +138,8 @@ pub fn handle<'info>(ctx: Context<'_, '_, 'info, 'info, CreateLobby<'info>>, arg
     let mint_key = ctx.accounts.mint.key();
     let lobby_seeds: &[&[u8]] = &[LOBBY_SEED, mint_key.as_ref(), &[ctx.bumps.lobby]];
     let lobby_key = ctx.accounts.lobby.key();
+    // What the creator holds now, to measure the rent the next two steps take from them.
+    let creator_before = ctx.accounts.creator.lamports();
     meteora::create_pool(args.name, args.symbol, args.uri, m, &lobby_key, &mint_key, &[lobby_seeds, mint_seeds])?;
     require!(meteora::mint_is_fixed(&m[meteora::init_ix::BASE_MINT])?, LaunchError::CoinNotFixed);
 
@@ -176,10 +178,28 @@ pub fn handle<'info>(ctx: Context<'_, '_, 'info, 'info, CreateLobby<'info>>, arg
         .ok_or(LaunchError::Overflow)? as u64;
 
     // Creation fee, approval fee and treasury fee. The team's own launch pays no treasury fee.
+    // Creating costs CREATION_TOTAL in all (founders, 10 Nov): the fee is that total less the rent the creator pays.
+    // Rent: this lobby and its gate (paid before this code runs), the coin, curve and hook list (measured just above),
+    // and the lobby's two token accounts (opened right after this instruction, fixed sizes). If rent ever costs more
+    // than the total, the fee is zero and creating still works.
     let sys = ctx.accounts.system_program.to_account_info();
     let creator_info = ctx.accounts.creator.to_account_info();
-    let upkeep = CREATION_FEE + if args.approval_only { APPROVAL_FEE } else { 0 };
-    system_program::transfer(CpiContext::new(sys.clone(), system_program::Transfer { from: creator_info.clone(), to: ctx.accounts.ops.to_account_info() }), upkeep)?;
+    let rent = Rent::get()?;
+    let rent_paid = creator_before
+        .saturating_sub(creator_info.lamports())
+        .saturating_add(rent.minimum_balance(8 + Lobby::INIT_SPACE))
+        .saturating_add(rent.minimum_balance(8 + Gate::INIT_SPACE))
+        .saturating_add(rent.minimum_balance(COIN_VAULT_LEN))
+        .saturating_add(rent.minimum_balance(WSOL_VAULT_LEN));
+    let mut upkeep = CREATION_TOTAL.saturating_sub(rent_paid) + if args.approval_only { APPROVAL_FEE } else { 0 };
+    // Solana refuses a payment that leaves an account holding less than its minimum, so a fee too small for an empty
+    // upkeep account is skipped.
+    if ctx.accounts.ops.lamports().saturating_add(upkeep) < rent.minimum_balance(0) {
+        upkeep = 0;
+    }
+    if upkeep > 0 {
+        system_program::transfer(CpiContext::new(sys.clone(), system_program::Transfer { from: creator_info.clone(), to: ctx.accounts.ops.to_account_info() }), upkeep)?;
+    }
     let treasury_fee = if ctx.accounts.creator.key() == SQUADZ_CREATOR { 0 } else { (args.treasury_bps as u64) * TREASURY_FEE_PER_BPS };
     if treasury_fee > 0 {
         system_program::transfer(CpiContext::new(sys, system_program::Transfer { from: creator_info, to: ctx.accounts.vault.to_account_info() }), treasury_fee)?;
